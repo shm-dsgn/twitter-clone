@@ -10,6 +10,7 @@ import {
   DotsThree,
 } from "@phosphor-icons/react/dist/ssr";
 import FeedCard from "@/components/FeedCard/FeedCard";
+import GoogleAuthButton from "@/components/GoogleAuthButton/GoogleAuthButton";
 
 interface TwitterSideBarButton {
   icon: React.ReactNode;
@@ -81,8 +82,10 @@ export default function Home() {
           <FeedCard />
           <FeedCard />
         </div>
-        <div className="col-span-3"></div>
+        <div className="col-span-3">
+          <GoogleAuthButton />
       </div>
+    </div>
     </div>
   );
 }
