@@ -61,13 +61,19 @@ interface VerifyGoogleTokenResult {
 export default function Home() {
   const handleLoginWithGoogle = useCallback(
     async (cred: CredentialResponse) => {
+      //console.log(cred)
       const googleToken = cred.credential;
+      //console.log(googleToken);
       if (!googleToken) return toast.error("Google Token not Failed");
 
+
+      //some error is happening here
       const { verifyGoogleToken } = await graphqlClient.request<VerifyGoogleTokenResult>(
         verifyUserGoogleTokenQuery,
         { token: googleToken }
       );
+
+      //console.log(verifyGoogleToken);
 
       toast.success("Verification Success");
 
