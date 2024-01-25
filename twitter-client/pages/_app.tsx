@@ -9,11 +9,12 @@ const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    
-    <GoogleOAuthProvider clientId="9345159235-0d1pe7shkh0036r14b2orcjstqo34c63.apps.googleusercontent.com">
-      <Component {...pageProps} />
-      <Toaster />
-    </GoogleOAuthProvider>
-
+    <QueryClientProvider client={queryClient}>
+      <GoogleOAuthProvider clientId="9345159235-0d1pe7shkh0036r14b2orcjstqo34c63.apps.googleusercontent.com">
+        <Component {...pageProps} />
+        <Toaster />
+        <ReactQueryDevtools />
+      </GoogleOAuthProvider>
+    </QueryClientProvider>
   );
 }

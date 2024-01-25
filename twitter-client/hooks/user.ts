@@ -15,7 +15,7 @@ interface CurrentUserResponse {
 
 export const useCurrentUser = () => {
   const query = useQuery<CurrentUserResponse>({
-    queryKey: ["current-user"],
+    queryKey: ['current-user'],
     queryFn: () => graphqlClient.request(getCurrentUserQuery),
   });
 
