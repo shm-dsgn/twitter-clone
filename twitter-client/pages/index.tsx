@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Inter } from "next/font/google";
 import {
   Bell,
   Hash,
@@ -10,7 +10,13 @@ import {
   DotsThree,
 } from "@phosphor-icons/react/dist/ssr";
 import FeedCard from "@/components/FeedCard/FeedCard";
-import GoogleAuthButton from "@/components/GoogleAuthButton/GoogleAuthButton";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { toast } from "react-hot-toast";
+import { useCallback } from "react";
+import { graphqlClient } from "@/clients/api";
+import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
+
+const inter = Inter({ subsets: ["latin"] });
 
 interface TwitterSideBarButton {
   icon: React.ReactNode;
@@ -48,9 +54,30 @@ const sideBarMenu: TwitterSideBarButton[] = [
   },
 ];
 
+interface VerifyGoogleTokenResult {
+  verifyGoogleToken: string;
+}
+
 export default function Home() {
+  const handleLoginWithGoogle = useCallback(
+    async (cred: CredentialResponse) => {
+      const googleToken = cred.credential;
+      if (!googleToken) return toast.error("Google Token not Failed");
+
+      const { verifyGoogleToken } = await graphqlClient.request<VerifyGoogleTokenResult>(
+        verifyUserGoogleTokenQuery,
+        { token: googleToken }
+      );
+
+      toast.success("Verification Success");
+
+      if(verifyGoogleToken) window.localStorage.setItem("__twitter_token", verifyGoogleToken);
+    },
+    []
+  );
+
   return (
-    <div>
+    <div className={inter.className}>
       <div className="grid grid-cols-12 h-screen w-screen px-56">
         <div className="col-span-3 flex justify-start p-8 flex-col">
           <div className="hover:bg-gray-900 cursor-pointer transition-all rounded-full p-3 h-fit w-fit mb-6">
@@ -83,9 +110,18 @@ export default function Home() {
           <FeedCard />
         </div>
         <div className="col-span-3">
-          <GoogleAuthButton />
+          <div className="pt-8 pl-8">
+            <h1 className="mt-4 text-lg font-normal">New here?</h1>
+            <h4 className="mb-4 text-sm font-normal">Sign In with Google</h4>
+            <GoogleLogin
+              onSuccess={handleLoginWithGoogle}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
+          </div>
+        </div>
       </div>
-    </div>
     </div>
   );
 }

@@ -15,9 +15,9 @@ class JWTService {
     return token;
   }
 
-  // public static decodeToken(token: string) {
-  //   return JWT.verify(token, JWT_SECRET) as JWTUser;
-  // }
+  public static decodeToken(token: string) {
+    return JWT.verify(token, JWT_SECRET) as JWTUser;
+  }
 }
 
 export default JWTService;
