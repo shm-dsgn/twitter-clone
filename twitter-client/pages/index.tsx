@@ -13,13 +13,14 @@ import {
 import FeedCard from "@/components/FeedCard/FeedCard";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { toast } from "react-hot-toast";
-import { useCallback, useContext } from "react";
+import { useCallback, useState } from "react";
 import { graphqlClient } from "@/clients/api";
 import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
 import { useCurrentUser } from "@/hooks/user";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-
+import { useCreateTweet, useGetAllTweets } from "@/hooks/tweet";
+import { Tweet } from "@/gql/graphql";
 const inter = Inter({ subsets: ["latin"] });
 
 interface TwitterSideBarButton {
@@ -64,7 +65,12 @@ interface VerifyGoogleTokenResult {
 
 export default function Home() {
   const { user } = useCurrentUser();
+  const { tweets = [] } = useGetAllTweets();
+  const { mutate } = useCreateTweet();
+
   const queryClient = useQueryClient();
+
+  const [content, setContent] = useState("");
 
   const handleSelectImage = useCallback(() => {
     const input = document.createElement("input");
@@ -73,6 +79,12 @@ export default function Home() {
 
     input.click();
   }, []);
+
+  const handleCreateTweet = useCallback(async () => {
+    mutate({
+      content,
+    });
+  }, [content, mutate]);
 
   const handleLoginWithGoogle = useCallback(
     async (cred: CredentialResponse) => {
@@ -154,15 +166,23 @@ export default function Home() {
                 </div>
                 <div className="col-span-11 pl-4">
                   <textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
                     className=" w-full bg-transparent focus:outline-none border-b-2 border-slate-700"
                     rows={3}
                     placeholder="What's happening?"
                   ></textarea>
                   <div className="text-blue-500 flex justify-between items-center">
-                    <div className="p-2 hover:bg-gray-900 cursor-pointer transition-all rounded-full h-fit w-fit" onClick={handleSelectImage}>
+                    <div
+                      className="p-2 hover:bg-gray-900 cursor-pointer transition-all rounded-full h-fit w-fit"
+                      onClick={handleSelectImage}
+                    >
                       <ImageSquare size={20} />
                     </div>
-                    <button className="bg-blue-500 hover:bg-blue-600 transition-all rounded-full py-2 px-4 h-fit text-white text-xs">
+                    <button
+                      onClick={handleCreateTweet}
+                      className="bg-blue-500 hover:bg-blue-600 transition-all rounded-full py-2 px-4 h-fit text-white text-xs"
+                    >
                       Tweet
                     </button>
                   </div>
@@ -170,15 +190,9 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
+          {tweets?.map((tweet) =>
+            tweet ? <FeedCard key={tweet?.id} data={tweet as Tweet} /> : null
+          )}
         </div>
         <div className="col-span-3">
           {!user && (

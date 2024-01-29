@@ -1,3 +1,4 @@
+import { Tweet } from "@/gql/graphql";
 import {
   ChatCircle,
   Export,
@@ -7,13 +8,21 @@ import {
 import Image from "next/image";
 import React from "react";
 
-const FeedCard: React.FC = () => {
+interface FeedCardProps {
+  data: Tweet
+}
+
+const FeedCard: React.FC<FeedCardProps> = (props) => {
+
+  const {data} = props;
+
   return (
     <div className="border border-x-0 border-b-0 border-gray-900 p-4 hover:bg-gray-950 transition-all cursor-pointer">
       <div className="grid grid-cols-12">
         <div className="col-span-1">
           <Image
-            src="https://avatars.githubusercontent.com/u/77527904?v=4"
+            src={data.author?.profileImageURL  ||
+              "https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png"}
             alt="profile"
             className="rounded-full"
             height={50}
@@ -21,12 +30,9 @@ const FeedCard: React.FC = () => {
           />
         </div>
         <div className="col-span-11 pl-4">
-          <h5 className=" text-sm font-semibold">Soham Dutta</h5>
-          <p className=" text-xs pt-2">
-            To safely allow optimizing images, define a list of supported URL
-            patterns in next.config.js. Be as specific as possible to prevent
-            malicious usage. For example, the following configuration will only
-            allow images from a specific AWS S3 bucket:
+          <h5 className=" text-sm font-semibold">{data.author?.firstName} {data.author?.lastName}</h5>
+          <p className="text-xs pt-2 whitespace-pre-wrap break-word break-all">
+            {data.content}
           </p>
           <div className="flex justify-between pr-12 mt-6 text-gray-500">
             <div>
