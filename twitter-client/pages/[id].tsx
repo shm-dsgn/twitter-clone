@@ -1,11 +1,14 @@
 import { NextPage } from "next";
 import TwitterLayout from "@/components/Layout/TwitterLayout";
+import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 
 const UserProfilePage: NextPage = () => {
     return (
         <div>
             <TwitterLayout>
-                <h1>Unga</h1>
+                <div>
+                    <nav><ArrowLeft size={28} /></nav>
+                </div>
             </TwitterLayout>
         </div>
     )

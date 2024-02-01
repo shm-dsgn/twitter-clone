@@ -40,15 +40,13 @@ export default function Home() {
           <div className="border border-x-0 border-b-0 border-gray-900 p-4 ">
             <div className="grid grid-cols-12">
               <div className="col-span-1">
-                {user?.profileImageURL && (
                   <Image
-                    src={user?.profileImageURL}
+                    src={user? user?.profileImageURL: "https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png"}
                     alt="profile"
                     className="rounded-full"
                     height={50}
                     width={50}
                   />
-                )}
               </div>
               <div className="col-span-11 pl-4">
                 <textarea
