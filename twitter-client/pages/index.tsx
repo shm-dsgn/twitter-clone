@@ -10,12 +10,23 @@ import { ImageSquare } from "@phosphor-icons/react/dist/ssr";
 import { Tweet } from "@/gql/graphql";
 import { useCreateTweet, useGetAllTweets } from "@/hooks/tweet";
 import { useCurrentUser } from "@/hooks/user";
+import { GetServerSideProps } from "next";
+import { graphqlClient } from "@/clients/api";
+import { getAllTweetsQuery } from "@/graphql/query/tweet";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+interface HomeProps {
+  tweets?: Tweet[];
+}
+
+interface GetAllTweetsResponse {
+  getAllTweets: Tweet[];
+}
+
+export default function Home(props: HomeProps) {
   const { user } = useCurrentUser();
-  const { tweets = [] } = useGetAllTweets();
+
   const { mutate } = useCreateTweet();
   const [content, setContent] = useState("");
 
@@ -40,13 +51,17 @@ export default function Home() {
           <div className="border border-x-0 border-b-0 border-gray-900 p-4 ">
             <div className="grid grid-cols-12">
               <div className="col-span-1">
-                  <Image
-                    src={user? user?.profileImageURL: "https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png"}
-                    alt="profile"
-                    className="rounded-full"
-                    height={50}
-                    width={50}
-                  />
+                <Image
+                  src={
+                    user
+                      ? user?.profileImageURL
+                      : "https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png"
+                  }
+                  alt="profile"
+                  className="rounded-full"
+                  height={50}
+                  width={50}
+                />
               </div>
               <div className="col-span-11 pl-4">
                 <textarea
@@ -74,10 +89,22 @@ export default function Home() {
             </div>
           </div>
         </div>
-        {tweets?.map((tweet) =>
-          tweet ? <FeedCard key={tweet?.id} data={tweet as Tweet} /> : null
-        )}
+        {Array.isArray(props.tweets) &&
+          props.tweets.map((tweet: Tweet) =>
+            tweet ? <FeedCard key={tweet?.id} data={tweet as Tweet} /> : null
+          )}
       </TwitterLayout>
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
+  const allTweets = await graphqlClient.request<GetAllTweetsResponse>(
+    getAllTweetsQuery
+  );
+  return {
+    props: {
+      tweets: allTweets?.getAllTweets as Tweet[],
+    },
+  };
+};

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   Bell,
   BookmarkSimple,
@@ -9,7 +9,7 @@ import {
   House,
   TwitterLogo,
   User,
-  Feather
+  Feather,
 } from "@phosphor-icons/react/dist/ssr";
 
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { graphqlClient } from "@/clients/api";
 import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
 import { useCurrentUser } from "@/hooks/user";
+import Link from "next/link";
 
 interface TwitterLayoutProps {
   children: React.ReactNode;
@@ -27,45 +28,46 @@ interface TwitterLayoutProps {
 interface TwitterSideBarButton {
   icon: React.ReactNode;
   title: string;
+  link: string;
 }
 
 interface VerifyGoogleTokenResult {
   verifyGoogleToken: string;
 }
 
-const sideBarMenu: TwitterSideBarButton[] = [
-  {
-    icon: <House size={24} />,
-    title: "Home",
-  },
-  {
-    icon: <Hash size={24} />,
-    title: "Explore",
-  },
-  {
-    icon: <Bell size={24} />,
-    title: "Notifications",
-  },
-  {
-    icon: <EnvelopeSimple size={24} />,
-    title: "Messages",
-  },
-  {
-    icon: <BookmarkSimple size={24} />,
-    title: "Bookmarks",
-  },
-  {
-    icon: <User size={24} />,
-    title: "Profile",
-  },
-  {
-    icon: <DotsThree size={24} />,
-    title: "More",
-  },
-];
-
 const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
   const { user } = useCurrentUser();
+
+  const sideBarMenuItems: TwitterSideBarButton[] = useMemo(
+    () => [
+      {
+        icon: <House size={24} />,
+        title: "Home",
+        link: "/",
+      },
+      {
+        icon: <Hash size={24} />,
+        title: "Explore",
+        link: "/",
+      },
+      {
+        icon: <Bell size={24} />,
+        title: "Notifications",
+        link: "/",
+      },
+      {
+        icon: <User size={24} />,
+        title: "Profile",
+        link: `/${user?.id}`,
+      },
+      {
+        icon: <DotsThree size={24} />,
+        title: "More",
+        link: "/",
+      },
+    ],
+    [user?.id]
+  );
 
   const queryClient = useQueryClient();
   const handleLoginWithGoogle = useCallback(
@@ -98,13 +100,15 @@ const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
               <TwitterLogo size={32} weight="fill" />
             </div>
             <div>
-              {sideBarMenu.map((item) => (
-                <div
-                  className="flex items-center gap-4 p-3 hover:bg-gray-900 cursor-pointer transition-all rounded-full h-fit w-fit"
-                  key={item.title}
-                >
-                  {item.icon}
-                  <p className="hidden sm:inline text-lg">{item.title}</p>
+              {sideBarMenuItems.map((item) => (
+                <div key={item.title}>
+                  <Link
+                    href={item.link}
+                    className="flex items-center gap-4 p-3 hover:bg-gray-900 cursor-pointer transition-all rounded-full h-fit w-fit"
+                  >
+                    {item.icon}
+                    <p className="hidden sm:inline text-lg">{item.title}</p>
+                  </Link>
                 </div>
               ))}
             </div>
@@ -112,7 +116,7 @@ const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
               Tweet
             </button>
             <button className="block sm:hidden bg-blue-500 hover:bg-blue-600 transition-all rounded-full p-3 h-fit text-white font-semibold mt-4">
-            <Feather size={20} />
+              <Feather size={20} />
             </button>
           </div>
 

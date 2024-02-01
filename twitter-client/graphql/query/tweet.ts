@@ -8,6 +8,7 @@ export const getAllTweetsQuery = gql(`
       content
       imageURL
       author {
+        id
         firstName
         lastName
         profileImageURL
