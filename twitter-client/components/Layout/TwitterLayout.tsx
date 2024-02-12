@@ -1,20 +1,18 @@
-import Image from "next/image";
-import React, { useCallback, useMemo } from "react";
 import {
   Bell,
-  BookmarkSimple,
   DotsThree,
-  EnvelopeSimple,
+  Feather,
   Hash,
   House,
   TwitterLogo,
-  User,
-  Feather,
+  User
 } from "@phosphor-icons/react/dist/ssr";
+import Image from "next/image";
+import React, { useCallback, useMemo } from "react";
 
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { toast } from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 
 import { graphqlClient } from "@/clients/api";
 import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";

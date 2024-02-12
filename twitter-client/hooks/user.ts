@@ -10,8 +10,18 @@ interface CurrentUserResponse {
         firstName: string;
         lastName: string;
         profileImageURL: string;
+        tweets: {
+            id: string;
+            content: string;
+            author: {
+                id: string;
+                firstName: string;
+                lastName: string;
+                profileImageURL: string;
+            }
     };
   }
+}
 
 export const useCurrentUser = () => {
   const query = useQuery<CurrentUserResponse>({
