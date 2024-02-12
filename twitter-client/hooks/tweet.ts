@@ -27,6 +27,7 @@ export const useCreateTweet = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-tweets"] }),
         toast.success("Tweet created successfully!", { id: "tweet" });
+      window.location.reload();
     },
   });
 
