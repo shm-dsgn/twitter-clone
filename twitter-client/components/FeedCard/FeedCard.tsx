@@ -44,6 +44,9 @@ const FeedCard: React.FC<FeedCardProps> = (props) => {
           <p className="text-xs pt-2 whitespace-pre-wrap break-word break-all">
             {data.content}
           </p>
+          {
+            data.imageURL && <Image src={data.imageURL} alt="tweet-image" width={320} height={240}/>
+          }
           <div className="flex justify-between pr-12 mt-6 text-gray-500">
             <div>
               <ChatCircle size={20} />

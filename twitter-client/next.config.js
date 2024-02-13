@@ -20,6 +20,12 @@ const nextConfig = {
         hostname: "twirpz.files.wordpress.com",
         port: "",
         pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "soham-twitter-dev.s3.ap-south-1.amazonaws.com",
+        port: "",
+        pathname: "/**",
       }
     ],
   },

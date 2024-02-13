@@ -12,7 +12,9 @@ import { useCreateTweet, useGetAllTweets } from "@/hooks/tweet";
 import { useCurrentUser } from "@/hooks/user";
 import { GetServerSideProps } from "next";
 import { graphqlClient } from "@/clients/api";
-import { getAllTweetsQuery } from "@/graphql/query/tweet";
+import { getAllTweetsQuery, getSignedURLForTweetQuery } from "@/graphql/query/tweet";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,25 +26,59 @@ interface GetAllTweetsResponse {
   getAllTweets: Tweet[];
 }
 
+interface GetSignedURLForTweetResponse {
+  getSignedURLForTweet: string;
+}
+
 export default function Home(props: HomeProps) {
   const { user } = useCurrentUser();
 
   const { mutate } = useCreateTweet();
   const [content, setContent] = useState("");
+  const [imageURL, setImageURL] = useState("");
+
+  const handleInputChangeFile = useCallback((input: HTMLInputElement) => {
+    return async(event: Event) => {
+      event.preventDefault();
+      const file: File | null | undefined = input.files?.item(0);
+      if(!file) return;
+
+      const {getSignedURLForTweet} = await graphqlClient.request<GetSignedURLForTweetResponse>(getSignedURLForTweetQuery, {
+        imageName: file.name,
+        imageType: file.type,
+      })
+
+      if(getSignedURLForTweet){
+        toast.loading("Uploading image....", {id: '2'});
+        await axios.put(getSignedURLForTweet, file, {
+          headers: {
+            "Content-Type": file.type,
+          }
+        })
+        toast.success("Image uploaded successfully.", {id: '2'});
+        const url = new URL(getSignedURLForTweet);
+        const myFilePath = `${url.origin}${url.pathname}`;
+        setImageURL(myFilePath);
+      }
+    }
+  },[]);
 
   const handleSelectImage = useCallback(() => {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
 
+    const handlerFn = handleInputChangeFile(input);
+    input.addEventListener("change", handlerFn);
     input.click();
-  }, []);
+  }, [handleInputChangeFile]);
 
   const handleCreateTweet = useCallback(async () => {
     mutate({
       content,
+      imageURL,
     });
-  }, [content, mutate]);
+  }, [content, mutate, imageURL]);
 
   return (
     <div className={inter.className}>
@@ -72,6 +108,9 @@ export default function Home(props: HomeProps) {
                     rows={3}
                     placeholder="What's happening?"
                   ></textarea>
+                  {
+                    imageURL && <Image src={imageURL} alt="tweet-image" width={300} height={300}/>
+                  }
                   <div className="text-blue-500 flex justify-between items-center">
                     <div
                       className="p-2 hover:bg-gray-900 cursor-pointer transition-all rounded-full h-fit w-fit"
