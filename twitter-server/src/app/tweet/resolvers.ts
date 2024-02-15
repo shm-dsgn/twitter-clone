@@ -5,8 +5,6 @@ import { GraphqlContext } from "../../interfaces";
 import TweetService, { CreateTweetPayload } from "../../services/tweet";
 import UserService from "../../services/user";
 
-
-
 const s3Client = new S3Client({
   region: process.env.AWS_DEFAULT_REGION!,
   credentials: {
@@ -36,7 +34,7 @@ const queries = {
       throw new Error("This image type is not supported");
 
     const putObjectCommand = new PutObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME!,
+      Bucket: process.env.AWS_S3_BUCKET!,
       Key: `uploads/${ctx.user.id}/tweets/${imageName}-${Date.now()}`,
       ContentType: imageType,
     });

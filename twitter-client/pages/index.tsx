@@ -32,8 +32,9 @@ interface GetSignedURLForTweetResponse {
 
 export default function Home(props: HomeProps) {
   const { user } = useCurrentUser();
+  const {tweets = props.tweets as Tweet[]} = useGetAllTweets();
 
-  const { mutate } = useCreateTweet();
+  const { mutateAsync } = useCreateTweet();
   const [content, setContent] = useState("");
   const [imageURL, setImageURL] = useState("");
 
@@ -74,11 +75,13 @@ export default function Home(props: HomeProps) {
   }, [handleInputChangeFile]);
 
   const handleCreateTweet = useCallback(async () => {
-    mutate({
+    await mutateAsync({
       content,
       imageURL,
     });
-  }, [content, mutate, imageURL]);
+    setContent("");
+    setImageURL("");
+  }, [content, mutateAsync, imageURL]);
 
   return (
     <div className={inter.className}>
@@ -130,8 +133,8 @@ export default function Home(props: HomeProps) {
             </div>
           </div>
         )}
-        {Array.isArray(props.tweets) &&
-          props.tweets.map((tweet: Tweet) =>
+        {Array.isArray(tweets) &&
+          tweets.map((tweet: Tweet) =>
             tweet ? <FeedCard key={tweet?.id} data={tweet as Tweet} /> : null
           )}
       </TwitterLayout>
