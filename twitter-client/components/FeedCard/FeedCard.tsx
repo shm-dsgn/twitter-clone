@@ -45,7 +45,17 @@ const FeedCard: React.FC<FeedCardProps> = (props) => {
             {data.content}
           </p>
           {
-            data.imageURL && <Image src={data.imageURL} alt="tweet-image" width={320} height={240}/>
+            data.imageURL && (
+              <div className="mt-4">
+                <Image
+                  src={data.imageURL}
+                  alt="tweet-image"
+                  width={900}
+                  height={900}
+                  className="rounded-lg object-cover"
+                />
+              </div>
+            )
           }
           <div className="flex justify-between pr-12 mt-6 text-gray-500">
             <div>
