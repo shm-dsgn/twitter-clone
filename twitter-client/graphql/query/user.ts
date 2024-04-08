@@ -14,6 +14,12 @@ export const getCurrentUserQuery = gql(`#graphql
             lastName
             email
             profileImageURL
+            recommendedUsers {
+                id
+                firstName
+                lastName
+                profileImageURL
+            }
             followers {
                 id
                 firstName

@@ -10,6 +10,12 @@ interface CurrentUserResponse {
         firstName: string;
         lastName: string;
         profileImageURL: string;
+        recommendedUsers: {
+            id: string;
+            firstName: string;
+            lastName: string;
+            profileImageURL: string;
+        };
         tweets: {
             id: string;
             content: string;
